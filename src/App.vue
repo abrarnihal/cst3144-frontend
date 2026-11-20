@@ -8,6 +8,7 @@ import { createOrder, fetchLessons, isApiConfigured, resolveApiImage, updateLess
 
 const searchTerm = ref('')
 const sortOption = ref('subject-asc')
+const availableOnly = ref(false)
 const cart = ref([])
 const showCart = ref(false)
 const customerName = ref('')
@@ -37,7 +38,7 @@ const visibleLessons = computed(() => {
   const [field, direction] = sortOption.value.split('-')
   const matches = lessons.value.filter((lesson) => {
     const searchableText = [lesson.title, lesson.subject, lesson.location].join(' ').toLowerCase()
-    return searchableText.includes(query)
+    return (!availableOnly.value || lesson.spaces > 0) && searchableText.includes(query)
   })
 
   return [...matches].sort((first, second) => {
@@ -51,12 +52,13 @@ const visibleLessons = computed(() => {
 })
 const resultsSummary = computed(() => {
   const count = visibleLessons.value.length
-  const noun = count === 1 ? 'class' : 'classes'
+  const noun = availableOnly.value
+    ? (count === 1 ? 'bookable class' : 'bookable classes')
+    : (count === 1 ? 'class' : 'classes')
   const query = searchTerm.value.trim()
 
-  return query
-    ? `${count} ${noun} found for “${query}”.`
-    : `${count} ${noun} available.`
+  if (query) return `${count} ${noun} found for “${query}”.`
+  return availableOnly.value ? `${count} ${noun} found.` : `${count} ${noun} in the catalogue.`
 })
 
 const cartCount = computed(() => cart.value.length)
@@ -131,6 +133,11 @@ async function loadLessons() {
 function clearCheckoutMessages() {
   checkoutError.value = ''
   checkoutSuccess.value = ''
+}
+
+function clearCatalogFilters() {
+  searchTerm.value = ''
+  availableOnly.value = false
 }
 
 function addToCart(lesson) {
@@ -239,8 +246,10 @@ onMounted(loadLessons)
         <CatalogControls
           :search-term="searchTerm"
           :sort-option="sortOption"
+          :available-only="availableOnly"
           @search-change="searchTerm = $event"
           @sort-change="sortOption = $event"
+          @availability-change="availableOnly = $event"
         />
         <p class="results-summary" role="status" aria-live="polite">{{ resultsSummary }}</p>
         <div v-if="catalogNotice" class="catalog-notice">
@@ -263,7 +272,7 @@ onMounted(loadLessons)
           <span aria-hidden="true">🔎</span>
           <h3>No classes found</h3>
           <p>Try a different subject or location.</p>
-          <button class="text-button" type="button" @click="searchTerm = ''">Clear search</button>
+          <button class="text-button" type="button" @click="clearCatalogFilters">Clear filters</button>
         </div>
       </section>
 

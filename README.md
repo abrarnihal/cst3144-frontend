@@ -6,6 +6,7 @@ Vue 3 and Vite frontend for the CST3144 after-school classes coursework.
 
 - Ten class cards with subject, location, price, remaining spaces, and an activity image when provided by the API (with an icon fallback).
 - Search across class names, subjects, and locations.
+- Filter out fully booked classes and combine that filter with search and sorting.
 - Sort by subject, location, price, or spaces in ascending and descending order.
 - Add one space to the bag or remove one and return that space to the catalogue.
 - Checkout form with letters-and-spaces name validation and digits-only phone validation.

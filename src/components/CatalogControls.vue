@@ -2,9 +2,10 @@
 defineProps({
   searchTerm: { type: String, required: true },
   sortOption: { type: String, required: true },
+  availableOnly: { type: Boolean, required: true },
 })
 
-const emit = defineEmits(['search-change', 'sort-change'])
+const emit = defineEmits(['search-change', 'sort-change', 'availability-change'])
 </script>
 
 <template>
@@ -35,6 +36,14 @@ const emit = defineEmits(['search-change', 'sort-change'])
         <option value="spaces-asc">Spaces low to high</option>
         <option value="spaces-desc">Spaces high to low</option>
       </select>
+    </label>
+    <label class="availability-filter">
+      <input
+        type="checkbox"
+        :checked="availableOnly"
+        @change="emit('availability-change', $event.target.checked)"
+      />
+      <span>Only show available</span>
     </label>
   </div>
 </template>
