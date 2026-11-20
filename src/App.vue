@@ -189,7 +189,8 @@ onMounted(loadLessons)
 </script>
 
 <template>
-  <div class="site-shell">
+  <div id="top" class="site-shell">
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="BrightSteps home">
         <span class="brand-mark" aria-hidden="true">✳</span>
@@ -204,8 +205,8 @@ onMounted(loadLessons)
       </nav>
     </header>
 
-    <main>
-      <section id="top" class="hero" v-if="!showCart">
+    <main id="main-content">
+      <section class="hero" v-if="!showCart">
         <div class="hero-copy">
           <p class="eyebrow hero-eyebrow"><span class="eyebrow-dot"></span> AFTER-SCHOOL, MADE MAGICAL</p>
           <h1>Room to play.<br /><em>Space to grow.</em></h1>
@@ -269,7 +270,7 @@ onMounted(loadLessons)
       <section id="cart" class="cart-section" v-if="showCart">
         <div class="cart-heading">
           <p class="eyebrow">THE START OF SOMETHING</p>
-          <h2>Your little adventure<span class="brand-period">.</span></h2>
+          <h1>Your little adventure<span class="brand-period">.</span></h1>
         </div>
         <div class="cart-panel">
           <div class="cart-panel-heading">
