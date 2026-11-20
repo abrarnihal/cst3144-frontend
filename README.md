@@ -32,7 +32,7 @@ Restart the Vite server after changing `.env.local`. Do not commit `.env.local` 
 
 ## Frontend API contract
 
-The page uses reusable `CatalogControls` and `LessonCard` components. API requests and backend image URL resolution live in `src/services/api.js`.
+The page uses reusable `CatalogControls`, `LessonCard`, and `CartView` components. API requests and backend image URL resolution live in `src/services/api.js`.
 
 - `GET /lessons` loads the live catalogue. Preview records remain available if the API cannot be reached. Lesson `image` paths are resolved against the API so the Express service can serve the coursework images.
 - `POST /orders` submits the customer name, phone number, and a lesson ID for each reserved space.
