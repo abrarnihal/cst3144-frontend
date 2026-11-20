@@ -10,8 +10,6 @@ const cart = ref([])
 const showCart = ref(false)
 const customerName = ref('')
 const customerPhone = ref('')
-const nameError = ref('')
-const phoneError = ref('')
 const checkoutError = ref('')
 const checkoutSuccess = ref('')
 const catalogNotice = ref('')
@@ -141,16 +139,10 @@ function removeFromCart(lessonId) {
 async function submitOrder() {
   const name = customerName.value.trim()
   const phone = customerPhone.value.trim()
-  nameError.value = name && /^[A-Za-z ]+$/.test(name)
-    ? ''
-    : 'Enter a name using letters and spaces only.'
-  phoneError.value = phone && /^\d+$/.test(phone)
-    ? ''
-    : 'Enter a phone number using digits only.'
   checkoutError.value = ''
   checkoutSuccess.value = ''
 
-  if (nameError.value || phoneError.value || cart.value.length === 0) return
+  if (!isNameValid.value || !isPhoneValid.value || cart.value.length === 0) return
 
   isSubmitting.value = true
   const orderLessonIds = [...cart.value]
@@ -171,8 +163,6 @@ async function submitOrder() {
     cart.value = []
     customerName.value = ''
     customerPhone.value = ''
-    nameError.value = ''
-    phoneError.value = ''
   } catch (error) {
     checkoutError.value = error instanceof Error
       ? error.message
@@ -318,12 +308,12 @@ onMounted(loadLessons)
                     autocomplete="name"
                     pattern="[A-Za-z ]+"
                     placeholder="e.g. Alex Morgan"
-                    :aria-invalid="Boolean(nameError)"
-                    aria-describedby="name-help name-error"
-                    @input="nameError = ''; clearCheckoutMessages()"
+                    :aria-invalid="customerName.trim().length > 0 && !isNameValid"
+                    :aria-describedby="customerName.trim().length > 0 && !isNameValid ? 'name-help name-error' : 'name-help'"
+                    @input="clearCheckoutMessages()"
                   />
                   <small id="name-help">Letters and spaces only.</small>
-                  <small v-if="nameError" id="name-error" class="field-error" role="alert">{{ nameError }}</small>
+                  <small v-if="customerName.trim().length > 0 && !isNameValid" id="name-error" class="field-error" role="alert">Use letters and spaces only.</small>
                 </label>
 
                 <label class="checkout-field" for="customer-phone">
@@ -336,12 +326,12 @@ onMounted(loadLessons)
                     autocomplete="tel"
                     pattern="[0-9]+"
                     placeholder="e.g. 07123456789"
-                    :aria-invalid="Boolean(phoneError)"
-                    aria-describedby="phone-help phone-error"
-                    @input="phoneError = ''; clearCheckoutMessages()"
+                    :aria-invalid="customerPhone.trim().length > 0 && !isPhoneValid"
+                    :aria-describedby="customerPhone.trim().length > 0 && !isPhoneValid ? 'phone-help phone-error' : 'phone-help'"
+                    @input="clearCheckoutMessages()"
                   />
                   <small id="phone-help">Digits only.</small>
-                  <small v-if="phoneError" id="phone-error" class="field-error" role="alert">{{ phoneError }}</small>
+                  <small v-if="customerPhone.trim().length > 0 && !isPhoneValid" id="phone-error" class="field-error" role="alert">Use digits only.</small>
                 </label>
               </div>
 
