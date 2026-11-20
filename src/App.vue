@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import CatalogControls from './components/CatalogControls.vue'
 import CartView from './components/CartView.vue'
 import LessonCard from './components/LessonCard.vue'
+import SiteHeader from './components/SiteHeader.vue'
 import { createOrder, fetchLessons, isApiConfigured, resolveApiImage, updateLessonSpaces } from './services/api.js'
 
 const searchTerm = ref('')
@@ -205,19 +206,7 @@ onMounted(loadLessons)
 <template>
   <div id="top" class="site-shell">
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="BrightSteps home">
-        <span class="brand-mark" aria-hidden="true">✳</span>
-        <span>brightsteps<span class="brand-period">.</span></span>
-      </a>
-      <nav class="main-nav" aria-label="Main navigation">
-        <a href="#classes">Explore classes</a>
-        <a href="#why-brightsteps">Our approach</a>
-        <button class="cart-link" type="button" :disabled="cartCount === 0 && !showCart" @click="toggleCart">
-          {{ showCart ? 'Back to classes' : 'Your bag' }} <span class="cart-count">{{ cartCount }}</span>
-        </button>
-      </nav>
-    </header>
+    <SiteHeader :cart-count="cartCount" :show-cart="showCart" @toggle-cart="toggleCart" />
 
     <main id="main-content">
       <section class="hero" v-if="!showCart">

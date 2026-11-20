@@ -10,7 +10,7 @@ Vue 3 and Vite frontend for the CST3144 after-school classes coursework.
 - Add one space to the bag or remove one and return that space to the catalogue.
 - Checkout form with letters-and-spaces name validation and digits-only phone validation.
 - Promise-based `fetch` calls, grouped in `src/services/api.js`, for lessons, orders, and availability updates.
-- Responsive layout, visible feedback, keyboard focus states, and reduced-motion support.
+- Responsive layout with a keyboard-operable mobile menu, visible feedback, keyboard focus states, and reduced-motion support.
 
 Advanced search remains a backend feature and is not called from this frontend.
 
@@ -32,7 +32,7 @@ Restart the Vite server after changing `.env.local`. Do not commit `.env.local` 
 
 ## Frontend API contract
 
-The page uses reusable `CatalogControls`, `LessonCard`, and `CartView` components. API requests and backend image URL resolution live in `src/services/api.js`.
+The page uses reusable `SiteHeader`, `CatalogControls`, `LessonCard`, and `CartView` components. The header includes a mobile navigation menu. API requests and backend image URL resolution live in `src/services/api.js`.
 
 - `GET /lessons` loads the live catalogue. Preview records remain available if the API cannot be reached. Lesson `image` paths are resolved against the API so the Express service can serve the coursework images.
 - `POST /orders` submits the customer name, phone number, and a lesson ID for each reserved space.
