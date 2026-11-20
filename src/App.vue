@@ -1,10 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import CatalogControls from './components/CatalogControls.vue'
+import LessonCard from './components/LessonCard.vue'
 
 const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 const searchTerm = ref('')
 const sortOption = ref('subject-asc')
 const cart = ref([])
+const showCart = ref(false)
 const customerName = ref('')
 const customerPhone = ref('')
 const nameError = ref('')
@@ -16,15 +19,15 @@ const isSubmitting = ref(false)
 
 // Preview records keep the catalogue useful while the coursework API is being built.
 const lessons = ref([
-  { id: 1, title: 'Creative Clay Club', subject: 'Art & Making', location: 'The Little Studio', price: 14, spaces: 8, icon: '🎨', tone: 'coral', label: 'MAKE & PLAY', time: 'Tue · 3:30 pm' },
-  { id: 2, title: 'Junior Gardeners', subject: 'Nature & Science', location: 'Community Garden', price: 11, spaces: 6, icon: '🌱', tone: 'mint', label: 'GET GROWING', time: 'Mon · 3:45 pm' },
-  { id: 3, title: 'Code & Create', subject: 'Technology', location: 'Makers Lab', price: 16, spaces: 10, icon: '💻', tone: 'blue', label: 'THINK & BUILD', time: 'Wed · 4:00 pm' },
-  { id: 4, title: 'Mini Chefs', subject: 'Food & Life Skills', location: 'The Kitchen Table', price: 13, spaces: 7, icon: '🥣', tone: 'peach', label: 'MIX IT UP', time: 'Thu · 3:30 pm' },
-  { id: 5, title: 'Drama Sparks', subject: 'Drama & Movement', location: 'The Stage Room', price: 12, spaces: 9, icon: '🎭', tone: 'lilac', label: 'TAKE THE STAGE', time: 'Fri · 3:45 pm' },
-  { id: 6, title: 'Junior Inventors', subject: 'Science & Building', location: 'Makers Lab', price: 15, spaces: 6, icon: '🧪', tone: 'yellow', label: 'WHAT IF?', time: 'Tue · 4:00 pm' },
-  { id: 7, title: 'Dance Lab', subject: 'Dance & Movement', location: 'Studio Two', price: 10, spaces: 12, icon: '🩰', tone: 'pink', label: 'MOVE YOUR WAY', time: 'Mon · 3:30 pm' },
+  { id: 1, title: 'Creative Clay Club', subject: 'Art & Making', location: 'The Little Studio', price: 14, spaces: 5, icon: '🎨', tone: 'coral', label: 'MAKE & PLAY', time: 'Tue · 3:30 pm' },
+  { id: 2, title: 'Junior Gardeners', subject: 'Nature & Science', location: 'Community Garden', price: 11, spaces: 5, icon: '🌱', tone: 'mint', label: 'GET GROWING', time: 'Mon · 3:45 pm' },
+  { id: 3, title: 'Code & Create', subject: 'Technology', location: 'Makers Lab', price: 16, spaces: 5, icon: '💻', tone: 'blue', label: 'THINK & BUILD', time: 'Wed · 4:00 pm' },
+  { id: 4, title: 'Mini Chefs', subject: 'Food & Life Skills', location: 'The Kitchen Table', price: 13, spaces: 5, icon: '🥣', tone: 'peach', label: 'MIX IT UP', time: 'Thu · 3:30 pm' },
+  { id: 5, title: 'Drama Sparks', subject: 'Drama & Movement', location: 'The Stage Room', price: 12, spaces: 5, icon: '🎭', tone: 'lilac', label: 'TAKE THE STAGE', time: 'Fri · 3:45 pm' },
+  { id: 6, title: 'Junior Inventors', subject: 'Science & Building', location: 'Makers Lab', price: 15, spaces: 5, icon: '🧪', tone: 'yellow', label: 'WHAT IF?', time: 'Tue · 4:00 pm' },
+  { id: 7, title: 'Dance Lab', subject: 'Dance & Movement', location: 'Studio Two', price: 10, spaces: 5, icon: '🩰', tone: 'pink', label: 'MOVE YOUR WAY', time: 'Mon · 3:30 pm' },
   { id: 8, title: 'Comic Book Crew', subject: 'Art & Making', location: 'The Little Studio', price: 11, spaces: 5, icon: '💬', tone: 'blue', label: 'DRAW A STORY', time: 'Wed · 3:30 pm' },
-  { id: 9, title: 'Chess & Strategy', subject: 'Games & Thinking', location: 'Library Room', price: 9, spaces: 8, icon: '♟️', tone: 'mint', label: 'MAKE YOUR MOVE', time: 'Thu · 4:00 pm' },
+  { id: 9, title: 'Chess & Strategy', subject: 'Games & Thinking', location: 'Library Room', price: 9, spaces: 5, icon: '♟️', tone: 'mint', label: 'MAKE YOUR MOVE', time: 'Thu · 4:00 pm' },
   { id: 10, title: 'Little Explorers', subject: 'Nature & Science', location: 'Riverside Park', price: 12, spaces: 5, icon: '🦋', tone: 'peach', label: 'OUT & ABOUT', time: 'Fri · 3:30 pm' },
 ])
 
@@ -46,8 +49,40 @@ const visibleLessons = computed(() => {
   })
 })
 
-const cartCount = computed(() => cart.value.reduce((total, item) => total + item.quantity, 0))
-const cartTotal = computed(() => cart.value.reduce((total, item) => total + item.price * item.quantity, 0))
+const cartCount = computed(() => cart.value.length)
+const cartItems = computed(() => {
+  const groupedItems = new Map()
+
+  for (const lessonId of cart.value) {
+    const lesson = lessons.value.find((item) => String(item.id) === String(lessonId))
+    if (!lesson) continue
+
+    const key = String(lessonId)
+    const existingItem = groupedItems.get(key)
+    if (existingItem) {
+      existingItem.quantity += 1
+    } else {
+      groupedItems.set(key, {
+        lessonId,
+        title: lesson.title,
+        price: lesson.price,
+        quantity: 1,
+      })
+    }
+  }
+
+  return [...groupedItems.values()]
+})
+const cartTotal = computed(() => cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0))
+const isNameValid = computed(() => /^[A-Za-z ]+$/.test(customerName.value.trim()))
+const isPhoneValid = computed(() => /^\d+$/.test(customerPhone.value.trim()))
+const canSubmitOrder = computed(() => isNameValid.value && isPhoneValid.value && cartCount.value > 0 && !isSubmitting.value)
+const checkoutHint = computed(() => {
+  if (isSubmitting.value) return 'Sending your booking request…'
+  if (cartCount.value === 0) return 'Add at least one class before continuing.'
+  if (!isNameValid.value || !isPhoneValid.value) return 'Enter a valid name and phone number to continue.'
+  return 'Your places are confirmed when the booking is submitted.'
+})
 
 async function requestJson(path, options = {}) {
   if (!apiBaseUrl) {
@@ -88,11 +123,12 @@ async function loadLessons() {
       subject: record.subject ?? record.topic ?? 'Activities',
       location: record.location ?? 'Location to be confirmed',
       price: Number(record.price ?? 0),
-      spaces: Number(record.spaces ?? 0),
+      spaces: Number(record.spaces ?? record.space ?? 0),
       icon: record.icon ?? '✳',
       tone: record.tone ?? 'blue',
       label: record.label ?? String(record.subject ?? 'AFTER SCHOOL').toUpperCase(),
       time: record.time ?? 'Weekly class',
+      image: resolveLessonImage(record.image),
     }))
     catalogNotice.value = ''
   } catch {
@@ -105,31 +141,29 @@ function clearCheckoutMessages() {
   checkoutSuccess.value = ''
 }
 
+function resolveLessonImage(imagePath) {
+  if (!imagePath) return ''
+  if (/^(https?:|data:)/i.test(imagePath)) return imagePath
+
+  return apiBaseUrl + (imagePath.startsWith('/') ? imagePath : '/' + imagePath)
+}
+
 function addToCart(lesson) {
   if (lesson.spaces < 1) return
 
   clearCheckoutMessages()
   lesson.spaces -= 1
-  const cartItem = cart.value.find((item) => String(item.lessonId) === String(lesson.id))
-  if (cartItem) {
-    cartItem.quantity += 1
-  } else {
-    cart.value.push({ lessonId: lesson.id, title: lesson.title, price: lesson.price, quantity: 1 })
-  }
+  cart.value.push(lesson.id)
 }
 
 function removeFromCart(lessonId) {
-  const cartItem = cart.value.find((item) => String(item.lessonId) === String(lessonId))
+  const cartIndex = cart.value.findIndex((id) => String(id) === String(lessonId))
   const lesson = lessons.value.find((item) => String(item.id) === String(lessonId))
-  if (!cartItem || !lesson) return
+  if (cartIndex === -1 || !lesson) return
 
   clearCheckoutMessages()
   lesson.spaces += 1
-  if (cartItem.quantity === 1) {
-    cart.value = cart.value.filter((item) => String(item.lessonId) !== String(lessonId))
-  } else {
-    cartItem.quantity -= 1
-  }
+  cart.value.splice(cartIndex, 1)
 }
 
 async function submitOrder() {
@@ -147,28 +181,26 @@ async function submitOrder() {
   if (nameError.value || phoneError.value || cart.value.length === 0) return
 
   isSubmitting.value = true
-  const orderItems = cart.value.map((item) => ({
-    lessonId: item.lessonId,
-    quantity: item.quantity,
-  }))
+  const orderLessonIds = [...cart.value]
+  const uniqueLessonIds = [...new Set(orderLessonIds.map((lessonId) => String(lessonId)))]
 
   try {
     await requestJson('/orders', {
       method: 'POST',
-      body: JSON.stringify({ name, phone, lessons: orderItems }),
+      body: JSON.stringify({ name, phone, lessons: orderLessonIds }),
     })
 
-    for (const item of orderItems) {
-      const lesson = lessons.value.find((record) => String(record.id) === String(item.lessonId))
+    for (const lessonId of uniqueLessonIds) {
+      const lesson = lessons.value.find((record) => String(record.id) === lessonId)
       if (!lesson) continue
 
-      await requestJson('/lessons/' + encodeURIComponent(item.lessonId), {
+      await requestJson('/lessons/' + encodeURIComponent(lessonId), {
         method: 'PUT',
         body: JSON.stringify({ spaces: lesson.spaces }),
       })
     }
 
-    const bookedCount = cartCount.value
+    const bookedCount = orderLessonIds.length
     checkoutSuccess.value = 'Booking request sent for ' + bookedCount + (bookedCount === 1 ? ' class.' : ' classes.')
     cart.value = []
     customerName.value = ''
@@ -188,8 +220,13 @@ function formatPrice(price) {
   return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(price)
 }
 
-function scrollToCart() {
-  document.getElementById('cart')?.scrollIntoView({ behavior: 'smooth' })
+function toggleCart() {
+  if (showCart.value) {
+    showCart.value = false
+    return
+  }
+
+  if (cartCount.value > 0) showCart.value = true
 }
 
 onMounted(loadLessons)
@@ -205,14 +242,14 @@ onMounted(loadLessons)
       <nav class="main-nav" aria-label="Main navigation">
         <a href="#classes">Explore classes</a>
         <a href="#why-brightsteps">Our approach</a>
-        <button class="cart-link" type="button" @click="scrollToCart">
-          Your bag <span class="cart-count">{{ cartCount }}</span>
+        <button class="cart-link" type="button" :disabled="cartCount === 0 && !showCart" @click="toggleCart">
+          {{ showCart ? 'Back to classes' : 'Your bag' }} <span class="cart-count">{{ cartCount }}</span>
         </button>
       </nav>
     </header>
 
     <main>
-      <section id="top" class="hero">
+      <section id="top" class="hero" v-if="!showCart">
         <div class="hero-copy">
           <p class="eyebrow hero-eyebrow"><span class="eyebrow-dot"></span> AFTER-SCHOOL, MADE MAGICAL</p>
           <h1>Room to play.<br /><em>Space to grow.</em></h1>
@@ -230,7 +267,7 @@ onMounted(loadLessons)
         </div>
       </section>
 
-      <section id="classes" class="classes-section">
+      <section id="classes" class="classes-section" v-if="!showCart">
         <div class="section-heading">
           <div>
             <p class="eyebrow">GOOD THINGS HAPPEN AFTER THREE</p>
@@ -239,47 +276,22 @@ onMounted(loadLessons)
           <p class="section-intro">Small groups, lovely teachers, and plenty of room to try something new.</p>
         </div>
 
-        <div class="class-toolbar">
-          <label class="search-control">
-            <span aria-hidden="true">⌕</span>
-            <input v-model="searchTerm" type="search" placeholder="Try art, gardening, or a location" aria-label="Search classes" />
-          </label>
-          <label class="sort-control">
-            <span>Sort by</span>
-            <select v-model="sortOption" aria-label="Sort classes">
-              <option value="subject-asc">Subject A to Z</option>
-              <option value="subject-desc">Subject Z to A</option>
-              <option value="location-asc">Location A to Z</option>
-              <option value="location-desc">Location Z to A</option>
-              <option value="price-asc">Price low to high</option>
-              <option value="price-desc">Price high to low</option>
-              <option value="spaces-asc">Spaces low to high</option>
-              <option value="spaces-desc">Spaces high to low</option>
-            </select>
-          </label>
-        </div>
+        <CatalogControls
+          :search-term="searchTerm"
+          :sort-option="sortOption"
+          @search-change="searchTerm = $event"
+          @sort-change="sortOption = $event"
+        />
         <p v-if="catalogNotice" class="catalog-notice" role="status">{{ catalogNotice }}</p>
 
         <div v-if="visibleLessons.length" class="lesson-grid">
-          <article v-for="lesson in visibleLessons" :key="lesson.id" class="lesson-card">
-            <div class="lesson-art" :class="'tone-' + lesson.tone">
-              <span class="lesson-label">{{ lesson.label }}</span>
-              <span class="lesson-icon" aria-hidden="true">{{ lesson.icon }}</span>
-              <span class="lesson-number">{{ String(lesson.id).padStart(2, '0') }}</span>
-            </div>
-            <div class="lesson-details">
-              <p class="lesson-subject">{{ lesson.subject }}</p>
-              <h3>{{ lesson.title }}</h3>
-              <div class="lesson-meta"><span>{{ lesson.location }}</span><span>{{ lesson.time }}</span></div>
-              <div class="lesson-card-bottom">
-                <div class="lesson-price">{{ formatPrice(lesson.price) }}<small> / class</small></div>
-                <button class="add-button" type="button" :disabled="lesson.spaces === 0" @click="addToCart(lesson)">
-                  {{ lesson.spaces === 0 ? 'Fully booked' : 'Add to bag +' }}
-                </button>
-              </div>
-              <p class="spaces-note">{{ lesson.spaces }} {{ lesson.spaces === 1 ? 'space' : 'spaces' }} left</p>
-            </div>
-          </article>
+          <LessonCard
+            v-for="lesson in visibleLessons"
+            :key="lesson.id"
+            :lesson="lesson"
+            :format-price="formatPrice"
+            @add="addToCart"
+          />
         </div>
         <div v-else class="empty-state">
           <span aria-hidden="true">🔎</span>
@@ -289,7 +301,7 @@ onMounted(loadLessons)
         </div>
       </section>
 
-      <section id="why-brightsteps" class="why-section">
+      <section id="why-brightsteps" class="why-section" v-if="!showCart">
         <div class="why-mark" aria-hidden="true">✳</div>
         <div>
           <p class="eyebrow">A GOOD FIT FOR EVERY KIND OF CURIOUS</p>
@@ -298,7 +310,7 @@ onMounted(loadLessons)
         <p class="why-copy">Friendly groups and welcoming spaces give every child a chance to make, move, explore, and feel proud of what they discover.</p>
       </section>
 
-      <section id="cart" class="cart-section">
+      <section id="cart" class="cart-section" v-if="showCart">
         <div class="cart-heading">
           <p class="eyebrow">THE START OF SOMETHING</p>
           <h2>Your little adventure<span class="brand-period">.</span></h2>
@@ -311,14 +323,16 @@ onMounted(loadLessons)
 
           <p v-if="checkoutSuccess" class="checkout-message checkout-message-success" role="status">{{ checkoutSuccess }}</p>
           <div v-if="cart.length" class="cart-list">
-            <div v-for="item in cart" :key="item.lessonId" class="cart-item">
+            <div v-for="item in cartItems" :key="item.lessonId" class="cart-item">
               <div><strong>{{ item.title }}</strong><span>{{ item.quantity }} × {{ formatPrice(item.price) }}</span></div>
               <button class="remove-button" type="button" :aria-label="'Remove one ' + item.title + ' class'" @click="removeFromCart(item.lessonId)">Remove</button>
             </div>
 
             <div class="cart-total"><span>Subtotal</span><strong>{{ formatPrice(cartTotal) }}</strong></div>
+          </div>
+          <p v-else class="cart-empty">Your bag is ready for a little inspiration. Add a class to get started.</p>
 
-            <form class="checkout-form" novalidate @submit.prevent="submitOrder">
+          <form class="checkout-form" novalidate @submit.prevent="submitOrder">
               <div class="checkout-intro">
                 <span class="checkout-number" aria-hidden="true">01</span>
                 <div>
@@ -366,14 +380,12 @@ onMounted(loadLessons)
               </div>
 
               <p v-if="checkoutError" class="checkout-message checkout-message-error" role="alert">{{ checkoutError }}</p>
-              <button class="checkout-submit" type="submit" :disabled="isSubmitting">
+              <button class="checkout-submit" type="submit" :disabled="!canSubmitOrder">
                 <span>{{ isSubmitting ? 'Sending booking…' : 'Continue to checkout' }}</span>
                 <span aria-hidden="true">{{ isSubmitting ? '◌' : '↗' }}</span>
               </button>
-              <p class="checkout-footnote">Your places are confirmed when the booking is submitted.</p>
-            </form>
-          </div>
-          <p v-else class="cart-empty">Your bag is ready for a little inspiration. Add a class to get started.</p>
+              <p class="checkout-footnote">{{ checkoutHint }}</p>
+          </form>
         </div>
       </section>
     </main>

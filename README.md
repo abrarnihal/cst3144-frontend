@@ -4,7 +4,7 @@ Vue 3 and Vite frontend for the CST3144 after-school classes coursework.
 
 ## Features
 
-- Ten class cards with subject, topic, location, price, remaining spaces, and an activity icon.
+- Ten class cards with subject, location, price, remaining spaces, and an activity image when provided by the API (with an icon fallback).
 - Search across class names, subjects, and locations.
 - Sort by subject, location, price, or spaces in ascending and descending order.
 - Add one space to the bag or remove one and return that space to the catalogue.
@@ -32,9 +32,9 @@ Restart the Vite server after changing `.env.local`. Do not commit `.env.local` 
 
 ## Frontend API contract
 
-- `GET /lessons` loads the live catalogue. Preview records remain available if the API cannot be reached.
-- `POST /orders` submits the customer name, phone number, and selected lesson IDs and quantities.
-- `PUT /lessons/:id` updates the remaining spaces for each selected lesson.
+- `GET /lessons` loads the live catalogue. Preview records remain available if the API cannot be reached. Lesson `image` paths are resolved against the API so the Express service can serve the coursework images.
+- `POST /orders` submits the customer name, phone number, and a lesson ID for each reserved space.
+- `PUT /lessons/:id` updates the remaining `spaces` value once for each selected lesson.
 
 The Express service must allow requests from the deployed GitHub Pages origin. Align request fields and response shapes with the backend before final integration.
 
