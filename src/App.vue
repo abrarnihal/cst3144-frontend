@@ -21,16 +21,16 @@ const isSubmitting = ref(false)
 
 // Preview records keep the catalogue useful while the coursework API is being built.
 const lessons = ref([
-  { id: 1, title: 'Creative Clay Club', subject: 'Art & Making', location: 'The Little Studio', price: 14, spaces: 5, icon: '🎨', tone: 'coral', label: 'MAKE & PLAY', time: 'Tue · 3:30 pm' },
-  { id: 2, title: 'Junior Gardeners', subject: 'Nature & Science', location: 'Community Garden', price: 11, spaces: 5, icon: '🌱', tone: 'mint', label: 'GET GROWING', time: 'Mon · 3:45 pm' },
-  { id: 3, title: 'Code & Create', subject: 'Technology', location: 'Makers Lab', price: 16, spaces: 5, icon: '💻', tone: 'blue', label: 'THINK & BUILD', time: 'Wed · 4:00 pm' },
-  { id: 4, title: 'Mini Chefs', subject: 'Food & Life Skills', location: 'The Kitchen Table', price: 13, spaces: 5, icon: '🥣', tone: 'peach', label: 'MIX IT UP', time: 'Thu · 3:30 pm' },
-  { id: 5, title: 'Drama Sparks', subject: 'Drama & Movement', location: 'The Stage Room', price: 12, spaces: 5, icon: '🎭', tone: 'lilac', label: 'TAKE THE STAGE', time: 'Fri · 3:45 pm' },
-  { id: 6, title: 'Junior Inventors', subject: 'Science & Building', location: 'Makers Lab', price: 15, spaces: 5, icon: '🧪', tone: 'yellow', label: 'WHAT IF?', time: 'Tue · 4:00 pm' },
-  { id: 7, title: 'Dance Lab', subject: 'Dance & Movement', location: 'Studio Two', price: 10, spaces: 5, icon: '🩰', tone: 'pink', label: 'MOVE YOUR WAY', time: 'Mon · 3:30 pm' },
-  { id: 8, title: 'Comic Book Crew', subject: 'Art & Making', location: 'The Little Studio', price: 11, spaces: 5, icon: '💬', tone: 'blue', label: 'DRAW A STORY', time: 'Wed · 3:30 pm' },
-  { id: 9, title: 'Chess & Strategy', subject: 'Games & Thinking', location: 'Library Room', price: 9, spaces: 5, icon: '♟️', tone: 'mint', label: 'MAKE YOUR MOVE', time: 'Thu · 4:00 pm' },
-  { id: 10, title: 'Little Explorers', subject: 'Nature & Science', location: 'Riverside Park', price: 12, spaces: 5, icon: '🦋', tone: 'peach', label: 'OUT & ABOUT', time: 'Fri · 3:30 pm' },
+  { id: 1, title: 'Creative Clay Club', subject: 'Art & Making', location: 'The Little Studio', price: 14, spaces: 5, icon: '🎨', tone: 'coral', label: 'MAKE & PLAY', time: 'Tue · 3:30 pm', image: import.meta.env.BASE_URL + 'lesson-images/clay.svg' },
+  { id: 2, title: 'Junior Gardeners', subject: 'Nature & Science', location: 'Community Garden', price: 11, spaces: 5, icon: '🌱', tone: 'mint', label: 'GET GROWING', time: 'Mon · 3:45 pm', image: import.meta.env.BASE_URL + 'lesson-images/garden.svg' },
+  { id: 3, title: 'Code & Create', subject: 'Technology', location: 'Makers Lab', price: 16, spaces: 5, icon: '💻', tone: 'blue', label: 'THINK & BUILD', time: 'Wed · 4:00 pm', image: import.meta.env.BASE_URL + 'lesson-images/code.svg' },
+  { id: 4, title: 'Mini Chefs', subject: 'Food & Life Skills', location: 'The Kitchen Table', price: 13, spaces: 5, icon: '🥣', tone: 'peach', label: 'MIX IT UP', time: 'Thu · 3:30 pm', image: import.meta.env.BASE_URL + 'lesson-images/cooking.svg' },
+  { id: 5, title: 'Drama Sparks', subject: 'Drama & Movement', location: 'The Stage Room', price: 12, spaces: 5, icon: '🎭', tone: 'lilac', label: 'TAKE THE STAGE', time: 'Fri · 3:45 pm', image: import.meta.env.BASE_URL + 'lesson-images/drama.svg' },
+  { id: 6, title: 'Junior Inventors', subject: 'Science & Building', location: 'Makers Lab', price: 15, spaces: 5, icon: '🧪', tone: 'yellow', label: 'WHAT IF?', time: 'Tue · 4:00 pm', image: import.meta.env.BASE_URL + 'lesson-images/science.svg' },
+  { id: 7, title: 'Dance Lab', subject: 'Dance & Movement', location: 'Studio Two', price: 10, spaces: 5, icon: '🩰', tone: 'pink', label: 'MOVE YOUR WAY', time: 'Mon · 3:30 pm', image: import.meta.env.BASE_URL + 'lesson-images/dance.svg' },
+  { id: 8, title: 'Comic Book Crew', subject: 'Art & Making', location: 'The Little Studio', price: 11, spaces: 5, icon: '💬', tone: 'blue', label: 'DRAW A STORY', time: 'Wed · 3:30 pm', image: import.meta.env.BASE_URL + 'lesson-images/comic.svg' },
+  { id: 9, title: 'Chess & Strategy', subject: 'Games & Thinking', location: 'Library Room', price: 9, spaces: 5, icon: '♟️', tone: 'mint', label: 'MAKE YOUR MOVE', time: 'Thu · 4:00 pm', image: import.meta.env.BASE_URL + 'lesson-images/chess.svg' },
+  { id: 10, title: 'Little Explorers', subject: 'Nature & Science', location: 'Riverside Park', price: 12, spaces: 5, icon: '🦋', tone: 'peach', label: 'OUT & ABOUT', time: 'Fri · 3:30 pm', image: import.meta.env.BASE_URL + 'lesson-images/explorers.svg' },
 ])
 
 const visibleLessons = computed(() => {
