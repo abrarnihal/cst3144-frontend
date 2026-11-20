@@ -14,6 +14,7 @@ const customerPhone = ref('')
 const checkoutError = ref('')
 const checkoutSuccess = ref('')
 const catalogNotice = ref('')
+const isLoadingLessons = ref(false)
 const isSubmitting = ref(false)
 
 // Preview records keep the catalogue useful while the coursework API is being built.
@@ -95,6 +96,7 @@ const checkoutHint = computed(() => {
 async function loadLessons() {
   if (!isApiConfigured) return
 
+  isLoadingLessons.value = true
   try {
     const result = await fetchLessons()
     const records = Array.isArray(result) ? result : result.lessons
@@ -120,6 +122,8 @@ async function loadLessons() {
     catalogNotice.value = ''
   } catch {
     catalogNotice.value = 'We could not reach the live class list, so the preview classes are shown.'
+  } finally {
+    isLoadingLessons.value = false
   }
 }
 
@@ -250,7 +254,12 @@ onMounted(loadLessons)
           @sort-change="sortOption = $event"
         />
         <p class="results-summary" role="status" aria-live="polite">{{ resultsSummary }}</p>
-        <p v-if="catalogNotice" class="catalog-notice" role="status">{{ catalogNotice }}</p>
+        <div v-if="catalogNotice" class="catalog-notice">
+          <span role="status" aria-live="polite">{{ isLoadingLessons ? 'Trying to reconnect to the live class list…' : catalogNotice }}</span>
+          <button class="retry-button" type="button" :disabled="isLoadingLessons" @click="loadLessons">
+            {{ isLoadingLessons ? 'Trying again…' : 'Try again' }}
+          </button>
+        </div>
 
         <div v-if="visibleLessons.length" class="lesson-grid">
           <LessonCard
