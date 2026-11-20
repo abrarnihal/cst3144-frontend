@@ -2,8 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import CatalogControls from './components/CatalogControls.vue'
 import LessonCard from './components/LessonCard.vue'
+import { createOrder, fetchLessons, isApiConfigured, resolveApiImage, updateLessonSpaces } from './services/api.js'
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 const searchTerm = ref('')
 const sortOption = ref('subject-asc')
 const cart = ref([])
@@ -84,32 +84,11 @@ const checkoutHint = computed(() => {
   return 'Your places are confirmed when the booking is submitted.'
 })
 
-async function requestJson(path, options = {}) {
-  if (!apiBaseUrl) {
-    throw new Error('Checkout is not connected yet. Set VITE_API_URL when the Express API is ready.')
-  }
-
-  const response = await fetch(apiBaseUrl + path, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-  })
-  const responseBody = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(responseBody.message || 'The server could not complete that request.')
-  }
-
-  return responseBody
-}
-
 async function loadLessons() {
-  if (!apiBaseUrl) return
+  if (!isApiConfigured) return
 
   try {
-    const result = await requestJson('/lessons')
+    const result = await fetchLessons()
     const records = Array.isArray(result) ? result : result.lessons
 
     if (!Array.isArray(records) || records.length === 0) {
@@ -128,7 +107,7 @@ async function loadLessons() {
       tone: record.tone ?? 'blue',
       label: record.label ?? String(record.subject ?? 'AFTER SCHOOL').toUpperCase(),
       time: record.time ?? 'Weekly class',
-      image: resolveLessonImage(record.image),
+      image: resolveApiImage(record.image),
     }))
     catalogNotice.value = ''
   } catch {
@@ -139,13 +118,6 @@ async function loadLessons() {
 function clearCheckoutMessages() {
   checkoutError.value = ''
   checkoutSuccess.value = ''
-}
-
-function resolveLessonImage(imagePath) {
-  if (!imagePath) return ''
-  if (/^(https?:|data:)/i.test(imagePath)) return imagePath
-
-  return apiBaseUrl + (imagePath.startsWith('/') ? imagePath : '/' + imagePath)
 }
 
 function addToCart(lesson) {
@@ -185,19 +157,13 @@ async function submitOrder() {
   const uniqueLessonIds = [...new Set(orderLessonIds.map((lessonId) => String(lessonId)))]
 
   try {
-    await requestJson('/orders', {
-      method: 'POST',
-      body: JSON.stringify({ name, phone, lessons: orderLessonIds }),
-    })
+    await createOrder({ name, phone, lessons: orderLessonIds })
 
     for (const lessonId of uniqueLessonIds) {
       const lesson = lessons.value.find((record) => String(record.id) === lessonId)
       if (!lesson) continue
 
-      await requestJson('/lessons/' + encodeURIComponent(lessonId), {
-        method: 'PUT',
-        body: JSON.stringify({ spaces: lesson.spaces }),
-      })
+      await updateLessonSpaces(lessonId, lesson.spaces)
     }
 
     const bookedCount = orderLessonIds.length
