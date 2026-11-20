@@ -1080,7 +1080,14 @@ select:focus-visible {
   }
 }
 
-/* Checkout keeps the final step clear, calm, and easy to complete. */
+/* Catalogue and checkout messages stay visible without overpowering the page. */
+.results-summary {
+  margin: -11px 0 17px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: right;
+}
+
 .catalog-notice {
   margin: 20px 0 0;
   padding: 13px 16px;

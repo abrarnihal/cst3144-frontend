@@ -46,6 +46,15 @@ const visibleLessons = computed(() => {
     return direction === 'asc' ? order : -order
   })
 })
+const resultsSummary = computed(() => {
+  const count = visibleLessons.value.length
+  const noun = count === 1 ? 'class' : 'classes'
+  const query = searchTerm.value.trim()
+
+  return query
+    ? `${count} ${noun} found for “${query}”.`
+    : `${count} ${noun} available.`
+})
 
 const cartCount = computed(() => cart.value.length)
 const cartItems = computed(() => {
@@ -239,6 +248,7 @@ onMounted(loadLessons)
           @search-change="searchTerm = $event"
           @sort-change="sortOption = $event"
         />
+        <p class="results-summary" role="status" aria-live="polite">{{ resultsSummary }}</p>
         <p v-if="catalogNotice" class="catalog-notice" role="status">{{ catalogNotice }}</p>
 
         <div v-if="visibleLessons.length" class="lesson-grid">
