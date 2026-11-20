@@ -43,6 +43,6 @@ The Express service must allow requests from the deployed GitHub Pages origin. A
 
 ## GitHub Pages
 
-The frontend is intended for its own repository, `cst3144-frontend`. A GitHub Actions workflow will build and publish the Vite output after repository setup.
+The frontend is in its own repository, `cst3144-frontend`. The workflow in `.github/workflows/deploy.yml` runs on pushes to `main`, installs from the lockfile, builds the Vue app, and deploys `dist` to GitHub Pages. Set the repository Actions variable `VITE_API_URL` to the deployed Express service URL before the live API is integrated.
 
 `node_modules/`, build output, and local environment files are excluded by `.gitignore`.
