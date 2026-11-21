@@ -27,6 +27,25 @@ export function fetchLessons() {
   return requestJson('/lessons')
 }
 
+export function searchLessons(filters = {}) {
+  const params = new URLSearchParams()
+
+  if (filters.q) params.set('q', filters.q)
+  if (filters.minPrice !== undefined && filters.minPrice !== '') params.set('minPrice', filters.minPrice)
+  if (filters.maxPrice !== undefined && filters.maxPrice !== '') params.set('maxPrice', filters.maxPrice)
+  if (filters.availableOnly) params.set('available', 'true')
+
+  return requestJson('/lessons/search?' + params.toString())
+}
+
+export function fetchTeachers() {
+  return requestJson('/teachers')
+}
+
+export function fetchTeacherLessons(teacherId) {
+  return requestJson('/teachers/' + encodeURIComponent(teacherId) + '/lessons')
+}
+
 export function createOrder(order) {
   return requestJson('/orders', {
     method: 'POST',
@@ -47,3 +66,4 @@ export function resolveApiImage(imagePath) {
 
   return apiBaseUrl + (imagePath.startsWith('/') ? imagePath : '/' + imagePath)
 }
+

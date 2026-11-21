@@ -43,6 +43,7 @@ function toggleCart() {
     <nav id="primary-navigation" class="main-nav" :class="{ 'main-nav-open': menuOpen }" aria-label="Main navigation" @keydown.esc.prevent="closeMenu">
       <template v-if="!showCart">
         <a href="#classes" @click="menuOpen = false">Explore classes</a>
+        <a href="#teachers" @click="menuOpen = false">Meet the teachers</a>
         <a href="#why-brightsteps" @click="menuOpen = false">Our approach</a>
       </template>
       <button
@@ -58,3 +59,4 @@ function toggleCart() {
     </nav>
   </header>
 </template>
+

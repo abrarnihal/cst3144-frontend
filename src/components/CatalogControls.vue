@@ -3,9 +3,11 @@ defineProps({
   searchTerm: { type: String, required: true },
   sortOption: { type: String, required: true },
   availableOnly: { type: Boolean, required: true },
+  minPrice: { type: String, required: true },
+  maxPrice: { type: String, required: true },
 })
 
-const emit = defineEmits(['search-change', 'sort-change', 'availability-change'])
+const emit = defineEmits(['search-change', 'sort-change', 'availability-change', 'price-change'])
 </script>
 
 <template>
@@ -37,6 +39,32 @@ const emit = defineEmits(['search-change', 'sort-change', 'availability-change']
         <option value="spaces-desc">Spaces high to low</option>
       </select>
     </label>
+    <div class="price-filter" aria-label="Filter by price">
+      <label>
+        <span>From £</span>
+        <input
+          :value="minPrice"
+          type="number"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          aria-label="Minimum price"
+          @input="emit('price-change', 'minPrice', $event.target.value)"
+        />
+      </label>
+      <label>
+        <span>To £</span>
+        <input
+          :value="maxPrice"
+          type="number"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          aria-label="Maximum price"
+          @input="emit('price-change', 'maxPrice', $event.target.value)"
+        />
+      </label>
+    </div>
     <label class="availability-filter">
       <input
         type="checkbox"
@@ -47,3 +75,4 @@ const emit = defineEmits(['search-change', 'sort-change', 'availability-change']
     </label>
   </div>
 </template>
+
