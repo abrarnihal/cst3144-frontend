@@ -56,7 +56,7 @@ export function createOrder(order) {
 export function updateLessonSpaces(lessonId, spaces) {
   return requestJson('/lessons/' + encodeURIComponent(lessonId), {
     method: 'PUT',
-    body: JSON.stringify({ spaces }),
+    body: JSON.stringify({ space: spaces }),
   })
 }
 

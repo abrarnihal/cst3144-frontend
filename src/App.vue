@@ -303,7 +303,7 @@ async function submitOrder() {
   const uniqueLessonIds = [...new Set(orderLessonIds.map((lessonId) => String(lessonId)))]
 
   try {
-    await createOrder({ name, phone, lessons: orderLessonIds })
+    await createOrder({ name, phone, lessonIDs: orderLessonIds })
 
     for (const lessonId of uniqueLessonIds) {
       const lesson = lessons.value.find((record) => String(record.id) === lessonId)

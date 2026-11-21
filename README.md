@@ -5,7 +5,7 @@ Vue 3 and Vite frontend for the CST3144 after-school classes coursework.
 ## Features
 
 - Ten class cards with subject, location, price, remaining spaces, and an activity image when provided by the API (with an icon fallback).
-- Search across class names, subjects, and locations, with backend filters for minimum/maximum price and availability when the API is configured.
+- Search across class names, subjects, locations, prices, remaining-space counts, and availability when the API is configured; combine it with price and availability filters.
 - Browse the teacher directory and open each teacher’s associated classes.
 - Filter out fully booked classes and combine filters with sorting.
 - Sort by subject, location, price, or spaces in ascending and descending order.
@@ -35,10 +35,11 @@ Restart the Vite server after changing `.env.local`. Do not commit `.env.local` 
 The page uses reusable `SiteHeader`, `CatalogControls`, `LessonCard`, and `CartView` components. The header includes a mobile navigation menu. API requests and backend image URL resolution live in `src/services/api.js`.
 
 - `GET /lessons` loads the live catalogue. Preview records remain available if the API cannot be reached. Lesson `image` paths are resolved against the API so the Express service can serve the coursework images.
-- `GET /lessons/search` receives the text, price, and availability filters. Sorting stays in the frontend so all four sort options remain immediate.
+- `GET /lessons/search` receives text, price, and availability filters. Sorting stays in the frontend so all four sort options remain immediate.
 - `GET /teachers` loads teacher cards, and `GET /teachers/:id/lessons` loads the selected teacher’s classes.
-- `POST /orders` submits the customer name, phone number, and a lesson ID for each reserved space.
-- `PUT /lessons/:id` updates the remaining `spaces` value once for each selected lesson.
+- `POST /orders` submits the customer name, phone number, and a `lessonIDs` entry for each reserved space.
+- `PUT /lessons/:id` updates the remaining `space` value once for each selected lesson.
+- The `/enrolment/:lessonid` coursework challenge is back-end-only; the frontend does not call it.
 
 If the API cannot be reached, the frontend continues to show preview lessons and teachers, with a visible status message.
 
