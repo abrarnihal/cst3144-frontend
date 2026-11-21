@@ -60,7 +60,15 @@ const visibleLessons = computed(() => {
     ? lessons.value
     : lessons.value.filter((lesson) => remoteSearchIds.value.includes(String(lesson.id)))
   const matches = catalogueRecords.filter((lesson) => {
-    const searchableText = [lesson.title, lesson.subject, lesson.location].join(' ').toLowerCase()
+    const availability = lesson.spaces > 0 ? 'available' : 'unavailable'
+    const searchableText = [
+      lesson.title,
+      lesson.subject,
+      lesson.location,
+      lesson.price,
+      lesson.spaces,
+      availability,
+    ].join(' ').toLowerCase()
     const matchesAvailability = !availableOnly.value || lesson.spaces > 0
     const matchesMinimum = lowestPrice === null || !Number.isFinite(lowestPrice) || lesson.price >= lowestPrice
     const matchesMaximum = highestPrice === null || !Number.isFinite(highestPrice) || lesson.price <= highestPrice
